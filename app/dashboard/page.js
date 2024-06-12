@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { account } from "../appwrite"; // Adjust the import path as needed
 import { Button } from "@/components/ui/button";
+import Script from 'next/script';
 
 const dummyData = [
   {
@@ -102,7 +103,8 @@ const DashboardPage = () => {
   const [user, setUser] = useState(null);
   const [url, setUrl] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionMessage, setSubmissionMessage] = useState("");// Set the number of URLs per page
+  const [submissionMessage, setSubmissionMessage] = useState("");
+  const router = useRouter();
 
   const indexOfLastUrl = currentPage * urlsPerPage;
   const indexOfFirstUrl = indexOfLastUrl - urlsPerPage;
@@ -111,7 +113,6 @@ const DashboardPage = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Your handleEdit, handleGenerateQRCode, and handleLogout functions remain unchanged
   const handleEdit = (id, key, value) => {
     setUrls((prevUrls) =>
       prevUrls.map((url) => (url.id === id ? { ...url, [key]: value } : url))
@@ -119,11 +120,21 @@ const DashboardPage = () => {
   };
 
   const handleGenerateQRCode = (url) => {
-    // Add your QR code generation logic here
+    if (window.gtag) {
+      window.gtag('event', 'generate_qr_code', {
+        event_category: 'Button',
+        event_label: url,
+      });
+    }
     console.log("Generate QR code for:", url);
   };
 
   const handleLogout = async () => {
+    if (window.gtag) {
+      window.gtag('event', 'logout', {
+        event_category: 'Button',
+      });
+    }
     try {
       await account.deleteSession("current");
       router.replace("/");
@@ -141,13 +152,18 @@ const DashboardPage = () => {
 // console.log(a)
 
   const handleSubmit = async () => {
+    if (window.gtag) {
+      window.gtag('event', 'submit_url', {
+        event_category: 'Button',
+        event_label: url,
+      });
+    }
     setIsSubmitting(true);
     setSubmissionMessage("");
     // const response = await client.call('functions', 'Shorten url');
     //   console.log(response);
 
     try {
-      // Replace 'https://example.com/api/submit-url' with your actual API endpoint
       const response = await fetch('https://example.com/api/submit-url', {
         method: 'POST',
         headers: {
@@ -172,14 +188,44 @@ const DashboardPage = () => {
     }
   };
 
+  const handleCopy = (text, type) => {
+    if (window.gtag) {
+      window.gtag('event', 'copy', {
+        event_category: 'Input',
+        event_label: `${type}: ${text}`,
+      });
+    }
+  };
+
+  const handleCopyEvent = (e, type) => {
+    const selectedText = window.getSelection().toString();
+    if (selectedText) {
+      handleCopy(selectedText, type);
+    }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-5xl bg-white p-8 rounded-lg shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-gray-700">Dashboard</h2>
-          <Button onClick={handleLogout}>Logout</Button>
-        </div>
+    <>
+      {/* Google Analytics Script */}
+      <Script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=G-DJNXR1J63Y`}
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-DJNXR1J63Y');
+        `}
+      </Script>
+
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="w-full max-w-5xl bg-white p-8 rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-gray-700">Dashboard</h2>
+            <Button onClick={handleLogout}>Logout</Button>
+          </div>
           <div className="mb-8">
             <input
               type="text"
@@ -197,58 +243,61 @@ const DashboardPage = () => {
             </Button>
             {submissionMessage && <p className="mt-4 text-center text-red-600">{submissionMessage}</p>}
           </div>
-        <Table>
-          <TableCaption>A list of your URLs.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>URL</TableHead>
-              <TableHead>Alias</TableHead>
-              <TableHead>Expiration Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentUrls.map((url) => (
-              <TableRow key={url.id}>
-                <TableCell>
-                  <input
-                    type="text"
-                    value={url.url}
-                    onChange={(e) => handleEdit(url.id, "url", e.target.value)}
-                    className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </TableCell>
-                <TableCell>
-                  <input
-                    type="text"
-                    value={url.alias}
-                    onChange={(e) => handleEdit(url.id, "alias", e.target.value)}
-                    className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </TableCell>
-                <TableCell>
-                  <input
-                    type="datetime-local"
-                    value={url.expirationDate}
-                    onChange={(e) => handleEdit(url.id, "expirationDate", e.target.value)}
-                    className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button onClick={() => handleGenerateQRCode(url.url)}>Generate QR Code</Button>
-                </TableCell>
+          <Table>
+            <TableCaption>A list of your URLs.</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>URL</TableHead>
+                <TableHead>Alias</TableHead>
+                <TableHead>Expiration Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Pagination
-          urlsPerPage={urlsPerPage}
-          totalUrls={urls.length}
-          paginate={paginate}
-          currentPage={currentPage}
-        />
+            </TableHeader>
+            <TableBody>
+              {currentUrls.map((url) => (
+                <TableRow key={url.id}>
+                  <TableCell>
+                    <input
+                      type="text"
+                      value={url.url}
+                      onChange={(e) => handleEdit(url.id, "url", e.target.value)}
+                      onCopy={(e) => handleCopyEvent(e, "URL")}
+                      className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="text"
+                      value={url.alias}
+                      onChange={(e) => handleEdit(url.id, "alias", e.target.value)}
+                      onCopy={(e) => handleCopyEvent(e, "Alias")}
+                      className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="datetime-local"
+                      value={url.expirationDate}
+                      onChange={(e) => handleEdit(url.id, "expirationDate", e.target.value)}
+                      className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button onClick={() => handleGenerateQRCode(url.url)}>Generate QR Code</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Pagination
+            urlsPerPage={urlsPerPage}
+            totalUrls={urls.length}
+            paginate={paginate}
+            currentPage={currentPage}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -266,9 +315,7 @@ const Pagination = ({ urlsPerPage, totalUrls, paginate, currentPage }) => {
           <li key={number}>
             <Button
               onClick={() => paginate(number)}
-              className={`mx-1 ${
-                currentPage === number ? " text-white" : ""
-              }`}
+              className={`mx-1 ${currentPage === number ? "text-white" : ""}`}
             >
               {number}
             </Button>
