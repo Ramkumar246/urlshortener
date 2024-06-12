@@ -1,5 +1,9 @@
 "use client";
 import { useState } from "react";
+// import { Appwrite } from 'appwrite';
+import { Client, Functions, ExecutionMethod } from "appwrite";
+import QRCode from "../../components/QRCode"
+
 import {
   Table,
   TableBody,
@@ -15,84 +19,7 @@ import { Button } from "@/components/ui/button";
 import Script from 'next/script';
 
 const dummyData = [
-  {
-    id: 1,
-    url: "https://example.com",
-    alias: "example",
-    expirationDate: "2024-12-31T23:59", // Updated with time
-  },
-  {
-    id: 2,
-    url: "https://another.com",
-    alias: "another",
-    expirationDate: "2025-01-15T14:30", // Updated with time
-  },
-  {
-    id: 3,
-    url: "https://example.org",
-    alias: "exampleorg",
-    expirationDate: "2024-11-20T09:15", // Updated with time
-  },
-  {
-    id: 4,
-    url: "https://example.net",
-    alias: "examplenetwork",
-    expirationDate: "2024-11-20T17:45", // Updated with time
-  },
-  {
-    id: 5,
-    url: "https://test.com",
-    alias: "test",
-    expirationDate: "2025-01-15T10:00", // Updated with time
-  },
-  {
-    id: 6,
-    url: "https://dummy.com",
-    alias: "dummy",
-    expirationDate: "2024-12-31T21:00", // Updated with time
-  },
-  {
-    id: 7,
-    url: "https://sample.com",
-    alias: "sample",
-    expirationDate: "2025-01-15T16:30", // Updated with time
-  },
-  {
-    id: 8,
-    url: "https://example.test",
-    alias: "exampletest",
-    expirationDate: "2024-11-20T08:30", // Updated with time
-  },
-  {
-    id: 9,
-    url: "https://another.org",
-    alias: "anotherorg",
-    expirationDate: "2024-12-31T19:00", // Updated with time
-  },
-  {
-    id: 10,
-    url: "https://example.io",
-    alias: "exampleio",
-    expirationDate: "2025-01-15T13:45", // Updated with time
-  },
-  {
-    id: 11,
-    url: "https://example.com",
-    alias: "example",
-    expirationDate: "2024-12-31T23:59", // Updated with time
-  },
-  {
-    id: 12,
-    url: "https://another.com",
-    alias: "another",
-    expirationDate: "2025-01-15T14:30", // Updated with time
-  },
-  {
-    id: 13,
-    url: "https://example.org",
-    alias: "exampleorg",
-    expirationDate: "2024-11-20T07:00", // Updated with time
-  },
+
 ];
 
 
@@ -103,7 +30,8 @@ const DashboardPage = () => {
   const [user, setUser] = useState(null);
   const [url, setUrl] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionMessage, setSubmissionMessage] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [submissionMessage, setSubmissionMessage] = useState("");// Set the number of URLs per page
 
   const indexOfLastUrl = currentPage * urlsPerPage;
   const indexOfFirstUrl = indexOfLastUrl - urlsPerPage;
@@ -141,12 +69,12 @@ const DashboardPage = () => {
       console.error("Logout failed", error);
     }
   };
-//   const data = {
-//     originalURL: "https://agilecyber.com",
-//     user_id: "66694ad10002a9d51628",
-//     custom_alias:null,
-//     expiration_time :"2024-06-12 01:01:10"
-// }
+  const data = {
+    "originalURL": "https://agilecyber.com",
+    "user_id": "66694ad10002a9d51628",
+    "custom_alias": null,
+    "expiration_time":"2024-06-12 01:01:10"
+}
 // const a = JSPN.stringify(data)
 // console.log(a)
 
@@ -158,33 +86,83 @@ const DashboardPage = () => {
       });
     }
     setIsSubmitting(true);
+    setQrCodeUrl("");
     setSubmissionMessage("");
     // const response = await client.call('functions', 'Shorten url');
     //   console.log(response);
+    //   const promise = functions.createExecution(
+    //     '6669622d002e44cf3510',  // functionId
+    //     data,  // body (optional)
+    //     false,  // async (optional)
+    //     '<PATH>',  // path (optional)
+    //     'POST',  // method (optional)
+    //     {} // headers (optional)
+    // );
+    // promise.then(function (response) {
+    //     console.log(response); // Success
+    // }, function (error) {
+    //     console.log(error); // Failure
+    // });
 
-    try {
-      const response = await fetch('https://example.com/api/submit-url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
+  
 
-      const data = await response.json();
+    const client = new Client()
+        .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+        .setProject('666927680026e4e78388'); // Your project ID
+    
+    const functions = new Functions(client);
+    
+    const result = await functions.createExecution(
+        '6669622d002e44cf3510', // functionId
+        '', // body (optional)
+    false, // async (optional)
+    '/', // path (optional)
+    ExecutionMethod.POST, // method (optional)
+    {} // headers (optional) // search (optional)
+    );
+    
+    console.log(result);
+    const responseBody = result.responseBody
+    console.log(responseBody)
+    let responseObject;
+if (responseBody.trim() !== '') {
+    responseObject = JSON.parse(responseBody);
+} else {
+    responseObject = {};
+}
 
-      if (response.ok) {
-        setSubmissionMessage("URL submitted successfully!");
-        setUrl("");
-      } else {
-        setSubmissionMessage(data.message || "Failed to submit URL.");
-      }
-    } catch (error) {
-      console.error("Failed to submit URL", error);
-      setSubmissionMessage("An error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+// Extract the shortened URL
+const shortenedURL = responseObject.shortenedURL;
+
+// Log the shortened URL to the console
+console.log('Shortened URL:', shortenedURL);
+setQrCodeUrl(shortenedURL);
+ // Your project ID
+
+    // try {
+    //   // Replace 'https://example.com/api/submit-url' with your actual API endpoint
+    //   const response = await fetch('https://cloud.appwrite.io/v1/functions/6669622d002e44cf3510/executions', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ url }),
+    //   });
+
+    //   const data = await response.json();
+
+    //   if (response.ok) {
+    //     setSubmissionMessage("URL submitted successfully!");
+    //     setUrl("");
+    //   } else {
+    //     setSubmissionMessage(data.message || "Failed to submit URL.");
+    //   }
+    // } catch (error) {
+    //   console.error("Failed to submit URL", error);
+    //   setSubmissionMessage("An error occurred. Please try again.");
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
   };
 
   const handleCopy = (text, type) => {
@@ -228,7 +206,7 @@ const DashboardPage = () => {
           <div className="mb-8">
             <input
               type="text"
-              placeholder="Enter a URL"
+              placeholder="https://agilecyber.com/"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -241,6 +219,8 @@ const DashboardPage = () => {
               {isSubmitting ? "Submitting..." : "Submit URL"}
             </Button>
             {submissionMessage && <p className="mt-4 text-center text-red-600">{submissionMessage}</p>}
+            {qrCodeUrl && <QRCode url={qrCodeUrl} width={400} />}
+            {qrCodeUrl && <h1>{qrCodeUrl}</h1>}
           </div>
           <Table>
             <TableCaption>A list of your URLs.</TableCaption>
