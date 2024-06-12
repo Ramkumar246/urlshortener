@@ -65,7 +65,6 @@ const DashboardPage = () => {
           <h2 className="text-2xl font-semibold text-gray-700">Dashboard</h2>
           <Button
             onClick={handleLogout}
-            className="py-2 px-4 bg-red-500 hover:bg-red-700 text-white font-semibold rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-400"
           >
             Logout
           </Button>
@@ -112,12 +111,14 @@ const DashboardPage = () => {
                   />
                 </TableCell>
                 <TableCell className="text-right">
+                  <div >
                   <Button
+                  className="mx-auto"
                     onClick={() => handleGenerateQRCode(url.url)}
-                    className="py-2 px-4 bg-green-500 hover:bg-green-700 text-white font-semibold rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
                   >
                     Generate QR Code
                   </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

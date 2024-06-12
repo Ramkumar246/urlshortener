@@ -46,7 +46,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-full mt-60 items-center justify-center bg-gray-100">
+    <div className="flex h-full items-center justify-center bg-gray-100">
       <Card className="w-[400px]">
         <CardHeader>
           <CardTitle>Login or Register</CardTitle>
@@ -76,7 +76,7 @@ const LoginPage = () => {
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            {/* <div className="flex flex-col space-y-1.5">
+            <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
@@ -86,7 +86,7 @@ const LoginPage = () => {
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div> */}
+            </div> 
           </form>
         </CardContent>
         <CardFooter className="w-full flex justify-between ">
