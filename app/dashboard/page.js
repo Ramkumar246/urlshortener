@@ -104,7 +104,6 @@ const DashboardPage = () => {
   const [url, setUrl] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionMessage, setSubmissionMessage] = useState("");
-  const router = useRouter();
 
   const indexOfLastUrl = currentPage * urlsPerPage;
   const indexOfFirstUrl = indexOfLastUrl - urlsPerPage;
