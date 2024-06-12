@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const LoginPage = () => {
+  const [showLogin, setShowLogin] = useState(true); // State to manage login card visibility
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,65 +47,103 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-full items-center justify-center bg-gray-100">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Login or Register</CardTitle>
-          <CardDescription>Access your account or create a new one.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div> 
-          </form>
-        </CardContent>
-        <CardFooter className="w-full flex justify-between ">
-          <div  className="w-full flex mx-auto">
-          <Button
-            variant="outline"
-            onClick={() => login(email, password)}
-          >
-            Login
-          </Button>
-          <Button variant="outline"
-            onClick={register}
-          >
-            Register
-          </Button>
+    <div className="flex flex-col items-center justify-center bg-gray-100 h-full space-y-4">
+      {showLogin && (
+        <Card className="w-[400px]">
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Access your account.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="login-email">Email</Label>
+                <Input
+                  id="login-email"
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="login-password">Password</Label>
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </form>
+            <div className="my-5">
+            <Button
+              onClick={() => login(email, password)}
+            >
+              Login
+            </Button>
           </div>
-        </CardFooter>
-      </Card>
+          <p className="ml-2" >Don't have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setShowLogin(false)}>Register here</span></p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!showLogin && (
+        <Card className="w-[400px]">
+          <CardHeader>
+            <CardTitle>Register</CardTitle>
+            <CardDescription>Create a new account.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="register-email">Email</Label>
+                <Input
+                  id="register-email"
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="register-password">Password</Label>
+                <Input
+                  id="register-password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="register-name">Name</Label>
+                <Input
+                  id="register-name"
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </form>
+            <div className="my-5">
+            <Button
+              onClick={register}
+            >
+              Register
+            </Button>
+            </div>
+          <p className="ml-2" >Already have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setShowLogin(true)}>Login here</span></p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
