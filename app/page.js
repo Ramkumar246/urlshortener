@@ -133,7 +133,7 @@ const LoginPage = () => {
                   Login
                 </Button>
               </div>
-              <p className="ml-2">Don't have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setShowLogin(false)}>Register here</span></p>
+              <p className="ml-2">Dont have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setShowLogin(false)}>Register here</span></p>
             </CardContent>
           </Card>
         )}

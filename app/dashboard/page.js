@@ -18,81 +18,82 @@ const dummyData = [
     id: 1,
     url: "https://example.com",
     alias: "example",
-    expirationDate: "2024-12-31",
+    expirationDate: "2024-12-31T23:59", // Updated with time
   },
   {
     id: 2,
     url: "https://another.com",
     alias: "another",
-    expirationDate: "2025-01-15",
+    expirationDate: "2025-01-15T14:30", // Updated with time
   },
   {
     id: 3,
     url: "https://example.org",
     alias: "exampleorg",
-    expirationDate: "2024-11-20",
+    expirationDate: "2024-11-20T09:15", // Updated with time
   },
   {
     id: 4,
     url: "https://example.net",
     alias: "examplenetwork",
-    expirationDate: "2024-11-20",
+    expirationDate: "2024-11-20T17:45", // Updated with time
   },
   {
     id: 5,
     url: "https://test.com",
     alias: "test",
-    expirationDate: "2025-01-15",
+    expirationDate: "2025-01-15T10:00", // Updated with time
   },
   {
     id: 6,
     url: "https://dummy.com",
     alias: "dummy",
-    expirationDate: "2024-12-31",
+    expirationDate: "2024-12-31T21:00", // Updated with time
   },
   {
     id: 7,
     url: "https://sample.com",
     alias: "sample",
-    expirationDate: "2025-01-15",
+    expirationDate: "2025-01-15T16:30", // Updated with time
   },
   {
     id: 8,
     url: "https://example.test",
     alias: "exampletest",
-    expirationDate: "2024-11-20",
+    expirationDate: "2024-11-20T08:30", // Updated with time
   },
   {
     id: 9,
     url: "https://another.org",
     alias: "anotherorg",
-    expirationDate: "2024-12-31",
+    expirationDate: "2024-12-31T19:00", // Updated with time
   },
   {
     id: 10,
     url: "https://example.io",
     alias: "exampleio",
-    expirationDate: "2025-01-15",
+    expirationDate: "2025-01-15T13:45", // Updated with time
   },
   {
     id: 11,
     url: "https://example.com",
     alias: "example",
-    expirationDate: "2024-12-31",
+    expirationDate: "2024-12-31T23:59", // Updated with time
   },
   {
     id: 12,
     url: "https://another.com",
     alias: "another",
-    expirationDate: "2025-01-15",
+    expirationDate: "2025-01-15T14:30", // Updated with time
   },
   {
     id: 13,
     url: "https://example.org",
     alias: "exampleorg",
-    expirationDate: "2024-11-20",
+    expirationDate: "2024-11-20T07:00", // Updated with time
   },
 ];
+
 
 const DashboardPage = () => {
   const [urls, setUrls] = useState(dummyData);
@@ -106,6 +107,7 @@ const DashboardPage = () => {
   const indexOfLastUrl = currentPage * urlsPerPage;
   const indexOfFirstUrl = indexOfLastUrl - urlsPerPage;
   const currentUrls = urls.slice(indexOfFirstUrl, indexOfLastUrl);
+  const router = useRouter();
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -129,10 +131,20 @@ const DashboardPage = () => {
       console.error("Logout failed", error);
     }
   };
+//   const data = {
+//     originalURL: "https://agilecyber.com",
+//     user_id: "66694ad10002a9d51628",
+//     custom_alias:null,
+//     expiration_time :"2024-06-12 01:01:10"
+// }
+// const a = JSPN.stringify(data)
+// console.log(a)
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setSubmissionMessage("");
+    // const response = await client.call('functions', 'Shorten url');
+    //   console.log(response);
 
     try {
       // Replace 'https://example.com/api/submit-url' with your actual API endpoint
